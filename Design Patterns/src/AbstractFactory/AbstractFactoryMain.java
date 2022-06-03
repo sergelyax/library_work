@@ -1,97 +1,118 @@
 package AbstractFactory;
 
-/*Фабрика по созданию фабрик*/
+import java.util.ArrayList;
+import java.util.List;
 
-public class AbstractFactoryMain {
+abstract class Car{
+    String name;
+    List accessories = new ArrayList();
+
+    public String toString(){
+        return "Model car: " + name + "\n" + accessories;
+    }
+}
+
+class LuxCar extends Car{
+    public LuxCar(CarPartsFactory carPartsFactory){
+        name = "Nice Car";
+        accessories.add(carPartsFactory.addCarSalon());
+        accessories.add(carPartsFactory.addSteeringWheel());
+        accessories.add(carPartsFactory.addGPS());
+    }
+}
+
+class BasicCar extends Car{
+    public BasicCar(CarPartsFactory carPartsFactory){
+        name = "Basic Car";
+        accessories.add(carPartsFactory.addCarSalon());
+        accessories.add(carPartsFactory.addSteeringWheel());
+    }
+}
+
+interface CarPartsFactory{
+    public abstract CarSalon addCarSalon();
+    public abstract SteeringWheel addSteeringWheel();
+    public abstract GPS addGPS();
+}
+
+class LuxCarPartsFactory implements CarPartsFactory{
+    public CarSalon addCarSalon(){
+        return new LeatherCarSalon();
+    }
+
+    public SteeringWheel addSteeringWheel(){
+        return new HeatedSteeringWheel();
+    }
+
+    public GPS addGPS(){
+        return new CarGPS();
+    }
+}
+
+class BasicCarPartsFactory implements CarPartsFactory{
+    public CarSalon addCarSalon(){
+        return new BasicCarSalon();
+    }
+
+    public SteeringWheel addSteeringWheel(){
+        return new BasicSteeringWheel();
+    }
+
+    public GPS addGPS(){
+        return null;
+    }
+}
+
+interface CarSalon{
+    public abstract String toString();
+}
+
+class LeatherCarSalon implements CarSalon{
+    public String toString(){
+        return "Leather Salon";
+    }
+}
+
+class BasicCarSalon implements CarSalon{
+    public String toString(){
+        return "Basic Salon";
+    }
+}
+
+interface SteeringWheel{
+    public String toString();
+}
+
+class HeatedSteeringWheel implements SteeringWheel{
+    public String toString(){
+        return "Heated steering wheel";
+    }
+}
+
+class BasicSteeringWheel implements SteeringWheel{
+    public String toString(){
+        return "Basic steering wheel";
+    }
+}
+
+interface GPS{
+    public String toString();
+}
+
+class CarGPS implements GPS{
+    public String toString(){
+        return "GPS";
+    }
+}
+public class AbstractFactoryMain{
     public static void main(String[] args) {
-        Factory factory = new AbstractFactory().createFactory("Car");
-        Car car = factory.createCar("Bmw");
-        car.drive();
-    }
-}
+        CarPartsFactory myLuxFactory = new LuxCarPartsFactory();
+        CarPartsFactory myBasicFactory = new BasicCarPartsFactory();
 
-interface Car {
-    void drive();
-}
+        Car myLuxCar = new LuxCar(myLuxFactory);
+        Car myBasicCar = new BasicCar(myBasicFactory);
 
-interface Tank {
-    void bang();
-}
-
-class T34 implements Tank {
-
-    @Override
-    public void bang() {
-        System.out.println("T34 is banging");
-    }
-}
-
-class Armata implements Tank {
-
-    @Override
-    public void bang() {
-        System.out.println("Armata is banging");
-    }
-}
-
-class Bmw implements Car {
-
-    @Override
-    public void drive() {
-        System.out.println("BMW POWER!");
-    }
-}
-
-class Jeep implements Car {
-
-    @Override
-    public void drive() {
-        System.out.println("JEEP POWER!");
-    }
-}
-
-class CarFactory implements Factory {
-    public Car createCar(String model) {
-        return switch (model) {
-            case ("Bmw") -> new Bmw();
-            case ("Jeep") -> new Jeep();
-            default -> null;
-        };
-    }
-
-    @Override
-    public Tank createTank(String model) {
-        return null;
-    }
-}
-
-class TankFactory implements Factory {
-    public Tank createTank(String model) {
-        return switch (model) {
-            case ("T34") -> new T34();
-            case ("Armata") -> new Armata();
-            default -> null;
-        };
-    }
-
-    @Override
-    public Car createCar(String model) {
-        return null;
-    }
-}
-
-interface Factory {
-    Car createCar(String model);
-
-    Tank createTank(String model);
-}
-
-class AbstractFactory {
-    Factory createFactory(String typeOfFactory) {
-        return switch (typeOfFactory) {
-            case ("Tank") -> new TankFactory();
-            case ("Car") -> new CarFactory();
-            default -> null;
-        };
+        System.out.println(myLuxCar);
+        System.out.println(myBasicCar);
     }
 }

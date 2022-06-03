@@ -1,78 +1,68 @@
 package Visitor;
 
+import java.util.*;
+
+abstract class Element {
+    public abstract void accept(IVisitor visitor);
+    public abstract void doSomething();
+}
+
+interface IVisitor {
+    public void visit(ConcreteElement1 el1);
+    public void visit(ConcreteElement2 el2);
+}
+
+class ConcreteElement1 extends Element {
+    public void doSomething(){
+        System.out.println("this is an element 1");
+    }
+
+    public void accept(IVisitor visitor) {
+        visitor.visit(this);
+    }
+}
+
+class ConcreteElement2 extends Element {
+    public void doSomething(){
+        System.out.println("this is an element 2");
+    }
+
+    public void accept(IVisitor visitor) {
+        visitor.visit(this);
+    }
+}
+class PatternVisitor implements IVisitor {
+
+    public void visit(ConcreteElement1 el1) {
+        el1.doSomething();
+    }
+
+    public void visit(ConcreteElement2 el2) {
+        el2.doSomething();
+    }
+}
+
+class ObjectStruture {
+    public static List<Element> getList(){
+        List<Element> list = new ArrayList<Element>();
+        Random ran = new Random();
+        for(int i=0; i<10; i++){
+            int a = ran.nextInt(100);
+            if(a>50){
+                list.add(new ConcreteElement1());
+            }else{
+                list.add(new ConcreteElement2());
+            }
+        }
+        return list;
+    }
+}
+
 public class VisitorMain {
-    public static void main ( String [] args ) {
-        Point p = new Point2d( 1, 2 );
-        Visitor v = new Chebyshev();
-        p.accept( v );
-        System.out.println( p.getMetric() );
-    }
-}
-interface Visitor {
-    public void visit ( Point2d p );
-    public void visit ( Point3d p );
-}
-abstract class Point {
-    public abstract void accept ( Visitor v );
-    private double metric = -1;
-    public double getMetric () {
-        return metric;
-    }
-    public void setMetric ( double metric ) {
-        this.metric = metric;
-    }
-}
-class Point2d extends Point {
-    public Point2d ( double x, double y ) {
-        this.x = x;
-        this.y = y;
-    }
-    public void accept ( Visitor v ) {
-        v.visit( this );
-    }
-    private double x;
-    public double getX () { return x; }
-    private double y;
-    public double getY () { return y; }
-}
-class Point3d extends Point {
-    public Point3d ( double x, double y, double z ) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-    public void accept ( Visitor v ) {
-        v.visit( this );
-    }
-    private double x;
-    public double getX () { return x; }
-    private double y;
-    public double getY () { return y; }
-    private double z;
-    public double getZ () { return z; }
-}
-
-class Euclid implements Visitor {
-    public void visit ( Point2d p ) {
-        p.setMetric( Math.sqrt( p.getX()*p.getX() + p.getY()*p.getY() ) );
-    }
-    public void visit ( Point3d p ) {
-        p.setMetric( Math.sqrt( p.getX()*p.getX() + p.getY()*p.getY() + p.getZ()*p.getZ() ) );
-    }
-}
-
-class Chebyshev implements Visitor {
-    public void visit ( Point2d p ) {
-        double ax = Math.abs( p.getX() );
-        double ay = Math.abs( p.getY() );
-        p.setMetric( ax>ay ? ax : ay );
-    }
-    public void visit ( Point3d p ) {
-        double ax = Math.abs( p.getX() );
-        double ay = Math.abs( p.getY() );
-        double az = Math.abs( p.getZ() );
-        double max = ax>ay ? ax : ay;
-        if ( max<az ) max = az;
-        p.setMetric( max );
+    public static void main(String[] args){
+        List<Element> list = ObjectStruture.getList();
+        for(Element e: list){
+            e.accept(new PatternVisitor());
+        }
     }
 }

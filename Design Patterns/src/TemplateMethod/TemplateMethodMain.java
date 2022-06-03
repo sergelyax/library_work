@@ -1,80 +1,96 @@
 package TemplateMethod;
 
-enum GameCode {
-    CHESS,
-    MONOPOLY
-}
+abstract class OrderProcessTemplate
+{
+    public boolean isGift;
 
-abstract class Game {
-    private int playersAmount;
-    protected abstract void initializeGame();
-    protected abstract void playGame();
-    protected abstract void endGame();
-    protected abstract void printWinner();
-    public final void playOneGame(int playersAmount){
-        setPlayersAmount(playersAmount);
-        initializeGame();
-        playGame();
-        endGame();
-        printWinner();
-    }
-    public void setPlayersAmount(int playersAmount){
-        this.playersAmount = playersAmount;
-    }
-}
+    public abstract void doSelect();
 
-class Chess extends Game {
-    @Override
-    protected void initializeGame() {
+    public abstract void doPayment();
 
-    }
-    @Override
-    protected void playGame() {
-
-    }
-    @Override
-    protected void endGame() {
-
-    }
-    @Override
-    protected void printWinner() {
-
-    }
-}
-
-class Monopoly extends Game{
-    @Override
-    protected void initializeGame() {
-
-    }
-    @Override
-    protected void playGame() {
-
-    }
-    @Override
-    protected void endGame() {
-
-    }
-    @Override
-    protected void printWinner() {
-
-    }
-}
-
-class TemplateMethodMain {
-    public static void main (String [] args){
-        final GameCode gameCode = GameCode.CHESS;
-        Game game;
-        switch (gameCode){
-            case CHESS :
-                game = new Chess();
-                break;
-            case MONOPOLY :
-                game = new Monopoly();
-                break;
-            default :
-                throw new IllegalStateException();
+    public final void giftWrap()
+    {
+        try
+        {
+            System.out.println("Gift wrap successful");
         }
-        game.playOneGame(2);
+        catch (Exception e)
+        {
+            System.out.println("Gift wrap unsuccessful");
+        }
+    }
+
+    public abstract void doDelivery();
+
+    public final void processOrder(boolean isGift)
+    {
+        doSelect();
+        doPayment();
+        if (isGift) {
+            giftWrap();
+        }
+        doDelivery();
+    }
+}
+
+
+class NetOrder extends OrderProcessTemplate
+{
+    @Override
+    public void doSelect()
+    {
+        System.out.println("Item added to online shopping cart");
+        System.out.println("Get gift wrap preference");
+        System.out.println("Get delivery address.");
+    }
+
+    @Override
+    public void doPayment()
+    {
+        System.out.println
+                ("Online Payment through Netbanking, card or Paytm");
+    }
+
+    @Override
+    public void doDelivery()
+    {
+        System.out.println
+                ("Ship the item through post to delivery address");
+    }
+
+}
+
+class StoreOrder extends OrderProcessTemplate
+{
+
+    @Override
+    public void doSelect()
+    {
+        System.out.println("Customer chooses the item from shelf.");
+    }
+
+    @Override
+    public void doPayment()
+    {
+        System.out.println("Pays at counter through cash/POS");
+    }
+
+    @Override
+    public void doDelivery()
+    {
+        System.out.println("Item delivered to in delivery counter.");
+    }
+
+}
+
+class TemplateMethodMain
+{
+    public static void main(String[] args)
+    {
+        OrderProcessTemplate netOrder = new NetOrder();
+        netOrder.processOrder(true);
+        System.out.println();
+        OrderProcessTemplate storeOrder = new StoreOrder();
+        storeOrder.processOrder(true);
     }
 }

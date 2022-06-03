@@ -8,7 +8,7 @@ public class SingletonMain {
         Singleton singleton1 = Singleton.getSingleton();
         Singleton singleton2 = Singleton.getSingleton();
 
-        singleton.name = "Semen";
+        singleton.name = "Sergey";
 
         System.out.println(singleton1.name);
         System.out.println(singleton2.name);
@@ -16,7 +16,7 @@ public class SingletonMain {
 }
 
 class Singleton {
-    String name = "Alex";
+    String name = "Serezha";
 
     static Singleton singleton = new Singleton();
 

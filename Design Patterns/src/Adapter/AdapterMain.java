@@ -1,60 +1,107 @@
 package Adapter;
 
-/*Превращает старый интерфейс в новый. По сути своя, это обертка,
-* которая позволяет запихнуть объект в метод, ожидающий другой объект.
-* Превращает один интерфейс в другой.*/
 
-/*Что тут происходит? У нас есть класс Phone с методом зарядки,
-* также у нас есть класс Laptop со своей зарядкой. Чтобы
-* зарядить Лаптоп зарядкой от телефона, мы создаем обертку, которая
-* позволяет через chargePhone зарядить MyLaptop*/
 
+interface BasicCar{
+    public void drive();
+    public void xenonOn();
+    public void xenonOff();
+}
+
+interface BasicCarRus{
+    public void drive();
+    public void basicLightOn();
+    public void basicLightOff();
+}
+
+class AudiA3 implements BasicCar{
+    final public int light = 100;
+
+    @Override
+    public void drive(){
+        System.out.println("AudiA3 rides!");
+    }
+
+    @Override
+    public void xenonOn(){
+        System.out.println("AudiA3 xenon on ");
+    }
+
+    @Override
+    public void xenonOff(){
+        System.out.println("AudiA3 xenon off");
+    }
+}
+
+class AudiA3Rus implements BasicCarRus{
+    final public int light = 50;
+
+    @Override
+    public void drive(){
+        System.out.println("AudiA3Rus rides!");
+    }
+
+    @Override
+    public void basicLightOn(){
+        System.out.println("AudiA3Rus basic light on");
+    }
+
+    @Override
+    public void basicLightOff(){
+        System.out.println("AudiA3Rus basic light off");
+    }
+}
+
+class CarAdapter implements BasicCar{
+    BasicCarRus basicCarRus;
+
+    public CarAdapter(BasicCarRus basicCarRus){
+        this.basicCarRus = basicCarRus;
+    }
+
+    @Override
+    public void drive(){
+        basicCarRus.drive();
+    }
+
+    @Override
+    public void xenonOn(){
+        basicCarRus.basicLightOn();
+    }
+
+    @Override
+    public void xenonOff(){
+        basicCarRus.basicLightOff();
+    }
+}
+
+class CentralProcessor {
+    private BasicCar car;
+
+    public CentralProcessor(BasicCar car) {
+        this.car = car;
+    }
+
+    public void work() {
+        car.drive();
+        car.xenonOn();
+        car.xenonOff();
+    }
+}
 public class AdapterMain {
     public static void main(String[] args) {
-        Charging charging = new Charging();
-        charging.chargePhone(new LaptopWrapper(new MyLaptop()));
+        //создаем объект машины
+        BasicCar audiA3 = new AudiA3();
+        //создаем объект процессора и передаем ему в управления объект машины
+        CentralProcessor cp = new CentralProcessor(audiA3);
+        //процессор управляет работой машины
+        cp.work();
+
+        //cсоздаем адаптер и передаем в него машину
+        CarAdapter audiA3Rus = new CarAdapter(new AudiA3Rus());
+        //создаем процессор и передаем в него адаптер
+        CentralProcessor cpRus = new CentralProcessor(audiA3Rus);
+        //процессор управляет машиной
+        cpRus.work();
     }
 }
-
-class LaptopWrapper implements Phone {
-    Laptop laptop;
-    public LaptopWrapper (Laptop laptop) {
-        this.laptop = laptop;
-    }
-
-    @Override
-    public void charge() {
-        laptop.superLaptopCharge();
-    }
-}
-
-interface Laptop {
-    void superLaptopCharge();
-}
-
-class MyLaptop implements Laptop {
-
-    @Override
-    public void superLaptopCharge() {
-        System.out.println("LAPTOP IS CHARGING!");
-    }
-}
-
-interface Phone {
-    void charge();
-}
-
-class Iphone implements Phone {
-
-    @Override
-    public void charge() {
-        System.out.println("IS CHARGING");
-    }
-}
-
-class Charging {
-    public void chargePhone (Phone phone) {
-        phone.charge();
-    }
-}
-

@@ -52,9 +52,7 @@ public class CompositeMain {
         object1.add(TestObject1);
         object1.add(TestObject2);
         object1.add(TestObject3);
-
         object2.add(TestObject4);
-
         object.add(object1);
         object.add(object2);
 

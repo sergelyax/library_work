@@ -1,65 +1,118 @@
 package ChainOfResponsibility;
 
-abstract class Logger {
-    public static int ERR = 3;
-    public static int NOTICE = 5;
-    public static int DEBUG = 7;
-    protected int mask;
-    // The next element in the chain of responsibility
-    protected Logger next;
-    public Logger setNext(Logger log) {
-        next = log;
-        return log;
+
+abstract class Processor
+{
+    private Processor nextProcessor;
+
+    public Processor(Processor nextProcessor){
+        this.nextProcessor = nextProcessor;
+    };
+
+    public void process(Number request){
+        if(nextProcessor != null)
+            nextProcessor.process(request);
+    };
+}
+
+class Number
+{
+    private int number;
+
+    public Number(int number)
+    {
+        this.number = number;
     }
-    public void message(String msg, int priority) {
-        if (priority <= mask) {
-            writeMessage(msg);
+
+    public int getNumber()
+    {
+        return number;
+    }
+
+}
+class chain {
+    Processor chain;
+
+    public chain(){
+        buildChain();
+    }
+
+    private void buildChain(){
+        chain = new NegativeProcessor(new ZeroProcessor(new PositiveProcessor(null)));
+    }
+
+    public void process(Number request) {
+        chain.process(request);
+    }
+
+}
+class NegativeProcessor extends Processor
+{
+    public NegativeProcessor(Processor nextProcessor){
+        super(nextProcessor);
+
+    }
+
+    public void process(Number request)
+    {
+        if (request.getNumber() < 0)
+        {
+            System.out.println("NegativeProcessor : " + request.getNumber());
         }
-        if (next != null) {
-            next.message(msg, priority);
+        else
+        {
+            super.process(request);
         }
     }
-    abstract protected void writeMessage(String msg);
 }
-class StdoutLogger extends Logger {
-    public StdoutLogger(int mask) {
-        this.mask = mask;
+
+class ZeroProcessor extends Processor
+{
+    public ZeroProcessor(Processor nextProcessor){
+        super(nextProcessor);
     }
-    protected void writeMessage(String msg) {
-        System.out.println("Writing to stdout: " + msg);
+
+    public void process(Number request)
+    {
+        if (request.getNumber() == 0)
+        {
+            System.out.println("ZeroProcessor : " + request.getNumber());
+        }
+        else
+        {
+            super.process(request);
+        }
     }
 }
 
-class EmailLogger extends Logger {
-    public EmailLogger(int mask) {
-        this.mask = mask;
+class PositiveProcessor extends Processor
+{
+
+    public PositiveProcessor(Processor nextProcessor){
+        super(nextProcessor);
     }
-    protected void writeMessage(String msg) {
-        System.out.println("Sending via email: " + msg);
+
+    public void process(Number request)
+    {
+        if (request.getNumber() > 0)
+        {
+            System.out.println("PositiveProcessor : " + request.getNumber());
+        }
+        else
+        {
+            super.process(request);
+        }
     }
 }
 
-class StderrLogger extends Logger {
-    public StderrLogger(int mask) {
-        this.mask = mask;
-    }
-    protected void writeMessage(String msg) {
-        System.out.println("Sending to stderr: " + msg);
-    }
-}
-
-public class ChainOfResponsibilityMain {
+class ChainOfResponsibilityMain {
     public static void main(String[] args) {
-        // Build the chain of responsibility
-        Logger logger, logger1,logger2;
-        logger = new StdoutLogger(Logger.DEBUG);
-        logger1 = logger.setNext(new EmailLogger(Logger.NOTICE));
-        logger2 = logger1.setNext(new StderrLogger(Logger.ERR));
-        // Handled by StdoutLogger
-        logger.message("Entering function y.", Logger.DEBUG);
-        // Handled by StdoutLogger and EmailLogger
-        logger.message("Step1 completed.", Logger.NOTICE);
-        // Handled by all three loggers
-        logger.message("An error has occurred.", Logger.ERR);
+        chain chain = new chain();
+
+        //Calling chain of responsibility
+        chain.process(new Number(90));
+        chain.process(new Number(-50));
+        chain.process(new Number(0));
+        chain.process(new Number(91));
     }
 }

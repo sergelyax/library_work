@@ -12,7 +12,7 @@ class Coffee {
     private Coffee() {
         for (int i = 1; i < 10; i++) {
             if (i % 2 == 0) {
-                System.out.println("JUST COFFEE! " + i + " CUPS!");
+                System.out.println("coffee, please " + i + " cups!");
             }
         }
     }
